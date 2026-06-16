@@ -8,6 +8,14 @@ import joblib
 from dotenv import load_dotenv
 
 load_dotenv()
+#----loading the ml model for rain prediction
+model_path="backend/xgb_model (2).joblib"
+if os.path.exists(model_path):
+    model=joblib.load(model_path)
+    print("imported")
+else:
+    model=None
+    print("Not imported")
 
 GIS_ALERTS_URL = os.environ.get("GIS_ALERTS_URL", "https://example.com/gis/alerts")
 
@@ -703,10 +711,12 @@ def chatbot():
 
 #----------ML Rain Predctor Feature------#
 
+
 def extract_features(location_dict):# extract the features from open weather
   loc_data=get_coordinates(location_dict)
-  lat=loc_data[0]
-  lon=loc_data[1]
+
+  lat=loc_data.get("lat","")
+  lon=loc_data.get("lon","")
   if not lat or not lon:
     return "Coordinates not fetched."
   API_KEY = os.getenv("OPENWEATHER_API_KEY")
