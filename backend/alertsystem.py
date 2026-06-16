@@ -284,11 +284,14 @@ def get_weather_insights():
 
         temp_val = weather_data["main"]["temp"]
         humid_val = weather_data["main"]["humidity"]
+        
 
         wind_val = round(
             weather_data["wind"]["speed"] * 3.6,
             1
         )
+        gust=weather_data["wind"].get("gust",0)*3.6
+        dir=weather_data["wind"]["deg"]
 
         rain_val = (
             weather_data.get("rain", {}).get("1h")
@@ -712,23 +715,15 @@ def chatbot():
 #----------ML Rain Predctor Feature------#
 
 
-def extract_features(location_dict):# extract the features from open weather
+def ml_rain_prediction(location_dict,temp_val,humid_val,wind_val,gust,dir):# extract the features from open weather
   loc_data=get_coordinates(location_dict)
 
-  lat=loc_data.get("lat","")
-  lon=loc_data.get("lon","")
+  lat=loc_data.get("latitude","")
+  lon=loc_data.get("longitude","")
   if not lat or not lon:
     return "Coordinates not fetched."
-  API_KEY = os.getenv("OPENWEATHER_API_KEY")
-  url=f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
-  response=requests.get(url).json()
-  if response.get('cod') != 200:
-    return "Failed api call"
-  openweather_temp=response['main']['temp']
-  openweather_humidity = response['main']['humidity']
-  openweather_wind_speed = response['wind']['speed']*3.6
-  openweather_wind_dir = response['wind']['deg']
-  openweather_gusts = response['wind'].get('gust', openweather_wind_speed)*3.6
+  
+  
   lat_rad = np.radians(lat)
   lon_rad = np.radians(lon)
   coord_x= np.cos(lat_rad) * np.cos(lon_rad)
@@ -738,35 +733,38 @@ def extract_features(location_dict):# extract the features from open weather
   live_features = pd.DataFrame({
 "latitude":lat,
 "longitude":lon,
-"wind_direction_10m_dominant": openweather_wind_dir,
-"wind_gusts_10m_mean": openweather_gusts,
-"wind_speed_10m_mean": openweather_wind_speed,
-"temperature_2m_mean": openweather_temp,
-"relative_humidity_2m_mean": openweather_humidity,
+"wind_direction_10m_dominant": dir,
+"wind_gusts_10m_mean": gust,
+"wind_speed_10m_mean": wind_val,
+"temperature_2m_mean": temp_val,
+"relative_humidity_2m_mean": humid_val,
 "coord_x":coord_x,
 "coord_y":coord_y,
 "coord_z":coord_z}, index=[0])
-  result=model.predict(live_features)
-  return result[0]
+  try:
+    result=model.predict(live_features)
+    rain=result[0]
+  except Exception as e:
+      rain= 0
   
-def get_rain_criteria(location_dict):
-  '''Takes the result from the extract_feature function and predict the likeability of rain.'''
-  rain_mm=extract_coordinates(location_dict)
+
+  rain_mm=rain
   try:
    if rain_mm <= 2.4:
-      return "No Rain / Light Drizzle ☀️"
+      rain_status= "No Rain / Light Drizzle ☀️"
    elif 2.4 < rain_mm <= 15.5:
-        return "Light Rain 🌧️"
+        rain_status= "Light Rain 🌧️"
    elif 15.5 < rain_mm <= 64.4:
-        return "Moderate Rain ⛈️"
+        rain_status="Moderate Rain ⛈️"
    elif 64.4 < rain_mm <= 115.5:
-        return "Heavy Rain Alert 🚨"
+        rain_status= "Heavy Rain Alert 🚨"
    elif 115.5 < rain_mm <= 204.4:
-        return "Very Heavy Rain Warning 🌊"
+        rain_status="Very Heavy Rain Warning 🌊"
    else:
-        return "Extremely Heavy Rain / Flood Risk ⚠️"
+        rain_status="Extremely Heavy Rain / Flood Risk ⚠️"
   except Exception as e:
-    return "An unexpected error occurred while determining rain status."
+    rain_status="An unexpected error occurred while determining rain status."
+  return {"Predicted Rain":rain,"Predicted Rain Status":rain_status}
 
 
 
