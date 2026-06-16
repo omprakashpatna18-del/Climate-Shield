@@ -62,22 +62,22 @@ def extract_features(location_dict):# extract the features from open weather
   
 def get_rain_criteria(location_dict):
   '''Takes the resulr from the extract_feature function and predict the likeability of rain.'''
-  rain_mm=extract_features(location_dict)
+  rain_mm=extract_coordinates(location_dict)
   try:
-    if rain_mm <= 2.4:
-        return "No Rain / Light Drizzle ☀️"
-    elif 2.4 < rain_mm <= 15.5:
+   if rain_mm <= 2.4:
+      return "No Rain / Light Drizzle ☀️"
+   elif 2.4 < rain_mm <= 15.5:
         return "Light Rain 🌧️"
-    elif 15.5 < rain_mm <= 64.4:
+   elif 15.5 < rain_mm <= 64.4:
         return "Moderate Rain ⛈️"
-    elif 64.4 < rain_mm <= 115.5:
+   elif 64.4 < rain_mm <= 115.5:
         return "Heavy Rain Alert 🚨"
-    elif 115.5 < rain_mm <= 204.4:
+   elif 115.5 < rain_mm <= 204.4:
         return "Very Heavy Rain Warning 🌊"
-    else:
+   else:
         return "Extremely Heavy Rain / Flood Risk ⚠️"
-   except Exception as e:
-    return "Rain status could not be found."
+  except Exception as e:
+    return "An unexpected error occurred while determining rain status."
   
   
 
