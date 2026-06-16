@@ -10,10 +10,11 @@ from dotenv import load_dotenv
 load_dotenv()
 #----loading the ml model for rain prediction
 model_path="backend/xgb_model (2).joblib"
-if os.path.exists(model_path):
-    model=joblib.load(model_path)
-    print("imported")
-else:
+try:
+    if os.path.exists(model_path):
+      model=joblib.load(model_path)
+      print("imported")
+except:
     model=None
     print("Not imported")
 
@@ -715,13 +716,16 @@ def chatbot():
 #----------ML Rain Predctor Feature------#
 
 
-def ml_rain_prediction(location_dict,temp_val,humid_val,wind_val,gust,dir):# extract the features from open weather
-  loc_data=get_coordinates(location_dict)
+def ml_rain_prediction(city,state,country,temp_val,humid_val,wind_val,gust,dir):# extract the features from open weather
+  loc_data=get_coordinates(city,state,country)
+  if not loc_data:
+    return {"Predicted Rain": 0, "Predicted Rain Status": "Coordinates not fetched."}
 
   lat=loc_data.get("latitude","")
   lon=loc_data.get("longitude","")
+    
   if not lat or not lon:
-    return "Coordinates not fetched."
+    return {"Predicted Rain": 0, "Predicted Rain Status": "Coordinates not fetched."}
   
   
   lat_rad = np.radians(lat)
