@@ -1,6 +1,9 @@
 import os
 import sys
 import requests
+import pandas as pd
+import numpy as np
+import joblib
 
 from dotenv import load_dotenv
 
@@ -696,6 +699,70 @@ def chatbot():
             "message":
             "Chatbot unavailable."
         })
+
+
+#----------ML Rain Predctor Feature------#
+
+def extract_features(location_dict):# extract the features from open weather
+  loc_data=get_coordinates(location_dict)
+  lat=loc_data[0]
+  lon=loc_data[1]
+  if not lat or not lon:
+    return "Coordinates not fetched."
+  API_KEY = os.getenv("OPENWEATHER_API_KEY")
+  url=f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API_KEY}&units=metric"
+  response=requests.get(url).json()
+  if response.get('cod') != 200:
+    return "Failed api call"
+  openweather_temp=response['main']['temp']
+  openweather_humidity = response['main']['humidity']
+  openweather_wind_speed = response['wind']['speed']*3.6
+  openweather_wind_dir = response['wind']['deg']
+  openweather_gusts = response['wind'].get('gust', openweather_wind_speed)*3.6
+  lat_rad = np.radians(lat)
+  lon_rad = np.radians(lon)
+  coord_x= np.cos(lat_rad) * np.cos(lon_rad)
+  coord_y= np.cos(lat_rad) * np.sin(lon_rad)
+  coord_z= np.sin(lat_rad)
+
+  live_features = pd.DataFrame({
+"latitude":lat,
+"longitude":lon,
+"wind_direction_10m_dominant": openweather_wind_dir,
+"wind_gusts_10m_mean": openweather_gusts,
+"wind_speed_10m_mean": openweather_wind_speed,
+"temperature_2m_mean": openweather_temp,
+"relative_humidity_2m_mean": openweather_humidity,
+"coord_x":coord_x,
+"coord_y":coord_y,
+"coord_z":coord_z}, index=[0])
+  result=model.predict(live_features)
+  return result[0]
+  
+def get_rain_criteria(location_dict):
+  '''Takes the result from the extract_feature function and predict the likeability of rain.'''
+  rain_mm=extract_coordinates(location_dict)
+  try:
+   if rain_mm <= 2.4:
+      return "No Rain / Light Drizzle ☀️"
+   elif 2.4 < rain_mm <= 15.5:
+        return "Light Rain 🌧️"
+   elif 15.5 < rain_mm <= 64.4:
+        return "Moderate Rain ⛈️"
+   elif 64.4 < rain_mm <= 115.5:
+        return "Heavy Rain Alert 🚨"
+   elif 115.5 < rain_mm <= 204.4:
+        return "Very Heavy Rain Warning 🌊"
+   else:
+        return "Extremely Heavy Rain / Flood Risk ⚠️"
+  except Exception as e:
+    return "An unexpected error occurred while determining rain status."
+
+
+
+
+
+
 
 # =========================================================
 # LOCAL RUN
