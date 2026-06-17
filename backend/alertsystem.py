@@ -517,7 +517,9 @@ def get_weather_insights():
                 "temperature": temp_val,
                 "humidity": humid_val,
                 "rainfall": rain_val,
-                "wind_speed": wind_val
+                "wind_speed": wind_val,
+                "direction":dir,
+                "gust":gust
             },
 
             "risks": {
