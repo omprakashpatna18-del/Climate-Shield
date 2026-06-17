@@ -259,7 +259,7 @@ async function getWeatherData() {
     document.getElementById("wind").innerText =
       `${data.weather.wind_speed} km/h`;
     document.getElementById("direction").innerText=`${data.weather.direction}`;
-    document.getElementBydId("gust").innerText=`${data.weather.gust}`;
+    document.getElementById("gust").innerText=`${data.weather.gust}`;
     //xgboost ml prediction
     if (data.ai_rain_prediction){
         const rain_val=data.ai_rain_prediction["Predicted Rain"];
@@ -268,7 +268,7 @@ async function getWeatherData() {
         const ml_rain_status=document.getElementById("ml-rain-status")
         if (ml_rain) ml_rain.innerText = `${rain_val} mm`;
         if (ml_rain_status) ml_rain_status.innerText = rain_status;
-        }
+    }
 
     // Risks scores
     const floodCard = document.querySelector(".risk-card.flood");
