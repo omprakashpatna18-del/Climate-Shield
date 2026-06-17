@@ -319,6 +319,8 @@ def get_weather_insights():
 
         forecast_data = forecast_response.json()
 
+        
+        ai_prediction_payload = ml_rain_prediction(lat, lon, temp_val, humid_val, wind_val, gust, direction)
         # ----------------------------------------------------
         # RISK CALCULATIONS
         # ----------------------------------------------------
@@ -543,6 +545,7 @@ def get_weather_insights():
             "forecast": forecast,
 
             "alerts": calculated_alerts,
+            "ai_rain_prediction": ai_prediction_payload
         })
 
     except Exception as general_err:
@@ -718,14 +721,8 @@ def chatbot():
 #----------ML Rain Predctor Feature------#
 
 
-def ml_rain_prediction(city,state,country,temp_val,humid_val,wind_val,gust,dir):# extract the features from open weather
-  loc_data=get_coordinates(city,state,country)
-  if not loc_data:
-    return {"Predicted Rain": 0, "Predicted Rain Status": "Coordinates not fetched."}
-
-  lat=loc_data.get("latitude","")
-  lon=loc_data.get("longitude","")
-    
+def ml_rain_prediction(lat,lon,temp_val,humid_val,wind_val,gust,dir):# extract the features from open weather
+   
   if not lat or not lon:
     return {"Predicted Rain": 0, "Predicted Rain Status": "Coordinates not fetched."}
   
