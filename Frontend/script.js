@@ -138,8 +138,8 @@ async function getWeatherData() {
         document.getElementById("humidity").innerText = `${data.weather.humidity} %`;
         document.getElementById("rainfall").innerText = `${data.weather.rainfall} mm`;
         document.getElementById("wind").innerText = `${data.weather.wind_speed} km/h`;
-        document.getElementById("direction").innerText= '${data.weather.wind_deg}';
-        document.getElementById("gust").innerText= '${data.weather.wind_gust}'; 
+        document.getElementById("direction").innerText= `${data.weather.wind_deg}`;
+        document.getElementById("gust").innerText= `${data.weather.wind_gust}`; 
         document.getElementById("flood-risk").innerText = data.risks.flood_risk;
         document.getElementById("heat-risk").innerText = data.risks.heat_risk;
 
