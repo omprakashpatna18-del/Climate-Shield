@@ -320,7 +320,7 @@ def get_weather_insights():
         forecast_data = forecast_response.json()
 
         
-        ai_prediction_payload = ml_rain_prediction(lat, lon, temp_val, humid_val, wind_val, gust, direction)
+        ai_prediction_payload = ml_rain_prediction(lat, lon, temp_val, humid_val, wind_val, gust, dir)
         # ----------------------------------------------------
         # RISK CALCULATIONS
         # ----------------------------------------------------
@@ -746,7 +746,7 @@ def ml_rain_prediction(lat,lon,temp_val,humid_val,wind_val,gust,dir):# extract t
 "coord_z":coord_z}, index=[0])
   try:
     result=model.predict(live_features)
-    rain=result[0]
+    rain=round(float(result[0]),2)
   except Exception as e:
       rain= 0
   
