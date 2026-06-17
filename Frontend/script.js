@@ -144,13 +144,14 @@ async function getWeatherData() {
         document.getElementById("heat-risk").innerText = data.risks.heat_risk;
 
         //xgboost ml prediction
-        if data.ai_rain_prediction{
+        if (data.ai_rain_prediction){
             const rain_val=data.ai_rain_prediction["Predicted Rain"];
-            const rain_status=data.ai_rain_predictiom["Predicted Rain Status"];
-            const ml_rain= document.getElementbyId("ml-rain-mm")
-            const ml_rain_status=document.getElementbyId("ml-rain-status")
+            const rain_status=data.ai_rain_prediction["Predicted Rain Status"];
+            const ml_rain= document.getElementById("ml-rain-mm")
+            const ml_rain_status=document.getElementById("ml-rain-status")
             if (ml_rain) ml_rain.innerText = `${rain_val} mm`;
             if (ml_rain_status) ml_rain_status.innerText = rain_status;
+        }
 
         let alertsHTML = "";
         data.alerts.forEach(alertMessage => {
