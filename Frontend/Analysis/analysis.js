@@ -53,7 +53,7 @@ if (cityInput && suggestionsBox) {
       console.log("Typing:", cityInput.value);
 
     const query = cityInput.value.trim();
-const currentQuery = query;;
+const currentQuery = query;
 
     if (query.length < 2) {
       suggestionsBox.innerHTML = "";
@@ -1035,6 +1035,7 @@ async function fetchAndRenderChart(lat, lon) {
     } catch (err) {
         console.error("Error fetching chart data:", err);
     }
+}
 
 function getRecentSearches() {
   return JSON.parse(localStorage.getItem("recentSearches")) || [];
