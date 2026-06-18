@@ -1035,7 +1035,7 @@ async function fetchAndRenderChart(lat, lon) {
     } catch (err) {
         console.error("Error fetching chart data:", err);
     }
-}
+
 
 function getRecentSearches() {
   return JSON.parse(localStorage.getItem("recentSearches")) || [];
